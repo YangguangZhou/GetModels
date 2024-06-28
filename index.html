@@ -135,6 +135,24 @@
                 opacity: 1;
             }
         }
+
+        .copyright {
+            text-align: center;
+            margin: 2rem 0 1rem 0;
+            color: #999;
+            font-size: 14px;
+        }
+
+        .copyright a {
+            text-decoration: none;
+            font-weight: bold;
+            color: var(--primary-color);
+            transition: opacity 0.2s;
+        }
+
+        .copyright a:hover {
+            opacity: 0.7;
+        }
     </style>
 </head>
 
@@ -147,6 +165,10 @@
         <div id="loader" class="loader"></div>
         <div id="result"></div>
         <div id="all-models"></div>
+    </div>
+    <div class="copyright">
+        Copyright &copy; 2024
+        <a href="https://jerryz.com.cn" target="_blank">Jerry Zhou</a>
     </div>
     <div id="copy-notification">已复制到剪贴板</div>
 
