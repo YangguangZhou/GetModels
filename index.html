@@ -174,7 +174,7 @@
 
     <script>
         async function fetchModels() {
-            const apiUrl = document.getElementById('apiUrl').value.trim();
+            const apiUrl = document.getElementById('apiUrl').value.trim().replace(/\/$/, '');
             const apiKey = document.getElementById('apiKey').value.trim();
             const resultDiv = document.getElementById('result');
             const loader = document.getElementById('loader');
@@ -211,6 +211,7 @@
                 loader.style.display = 'none';
             }
         }
+
 
         function displayModels(models) {
             const resultDiv = document.getElementById('result');
