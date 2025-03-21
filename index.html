@@ -26,6 +26,10 @@
             --md-sys-color-error-container: #FFDAD6;
             --md-sys-color-on-error-container: #410002;
             --md-sys-color-outline: #6F7978;
+            --md-sys-color-success: #006E1C;
+            --md-sys-color-on-success: #ffffff;
+            --md-sys-color-success-container: #89F88F;
+            --md-sys-color-on-success-container: #002105;
         }
 
         body {
@@ -180,6 +184,17 @@
             border-bottom: 1px solid var(--md-sys-color-outline);
             display: flex;
             align-items: center;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            position: relative;
+        }
+
+        .model-item:hover {
+            background-color: rgba(0, 106, 106, 0.08);
+        }
+
+        .model-item:active {
+            background-color: rgba(0, 106, 106, 0.12);
         }
 
         .model-item:last-child {
@@ -189,6 +204,18 @@
         .model-icon {
             margin-right: 12px;
             color: var(--md-sys-color-primary);
+        }
+
+        .model-copy-hint {
+            font-size: 0.75rem;
+            color: var(--md-sys-color-on-surface-variant);
+            margin-left: auto;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .model-item:hover .model-copy-hint {
+            opacity: 1;
         }
 
         .error {
@@ -205,6 +232,26 @@
             margin-right: 8px;
         }
 
+        .success {
+            background-color: var(--md-sys-color-success-container);
+            color: var(--md-sys-color-on-success-container);
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            opacity: 1;
+            transition: opacity 0.5s;
+        }
+
+        .success.fade-out {
+            opacity: 0;
+        }
+
+        .success .material-symbols-outlined {
+            margin-right: 8px;
+        }
+
         .hidden {
             display: none;
         }
@@ -217,6 +264,13 @@
             margin-top: auto;
         }
 
+        .actions-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
         /* 响应式调整 */
         @media (max-width: 600px) {
             main {
@@ -225,6 +279,16 @@
             
             .card {
                 padding: 16px;
+            }
+
+            .actions-bar {
+                flex-direction: column;
+            }
+
+            .button {
+                width: 100%;
+                margin-right: 0;
+                margin-bottom: 8px;
             }
         }
 
@@ -248,6 +312,10 @@
                 --md-sys-color-error-container: #93000A;
                 --md-sys-color-on-error-container: #FFDAD6;
                 --md-sys-color-outline: #899392;
+                --md-sys-color-success: #70DB75;
+                --md-sys-color-on-success: #003A0D;
+                --md-sys-color-success-container: #005315;
+                --md-sys-color-on-success-container: #89F88F;
             }
 
             body {
@@ -283,6 +351,17 @@
             to {
                 transform: rotate(360deg);
             }
+        }
+
+        /* 复制反馈动画 */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .pulse {
+            animation: pulse 0.3s ease-in-out;
         }
     </style>
 </head>
@@ -330,12 +409,23 @@
 
         <div class="card">
             <h2>模型列表</h2>
+            <div id="success-container" class="success hidden">
+                <span class="material-symbols-outlined">check_circle</span>
+                <div id="success-message">复制成功！</div>
+            </div>
             <div id="loading" class="hidden">
                 <div class="loader"></div> 正在查询模型，请稍候...
             </div>
             <div id="result" class="result-container">
                 <div class="helper-text" id="no-results-message">请使用上方配置进行模型查询</div>
                 <ul class="model-list" id="models-list"></ul>
+            </div>
+            <div class="actions-bar hidden" id="copy-actions">
+                <button id="copy-all-models" class="button">
+                    <span class="material-symbols-outlined">content_copy</span>
+                    复制全部模型名称
+                </button>
+                <div class="helper-text">点击单个模型可快速复制该模型名称</div>
             </div>
         </div>
     </main>
@@ -348,6 +438,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             const fetchButton = document.getElementById('fetch-models');
             const clearButton = document.getElementById('clear-results');
+            const copyAllButton = document.getElementById('copy-all-models');
             const baseUrlInput = document.getElementById('base-url');
             const apiKeyInput = document.getElementById('api-key');
             const modelTypeSelect = document.getElementById('model-type');
@@ -356,10 +447,16 @@
             const loadingElement = document.getElementById('loading');
             const errorContainer = document.getElementById('error-container');
             const errorMessage = document.getElementById('error-message');
+            const successContainer = document.getElementById('success-container');
+            const successMessage = document.getElementById('success-message');
             const noResultsMessage = document.getElementById('no-results-message');
+            const copyActions = document.getElementById('copy-actions');
+
+            let modelIds = [];
 
             fetchButton.addEventListener('click', fetchModels);
             clearButton.addEventListener('click', clearResults);
+            copyAllButton.addEventListener('click', copyAllModels);
 
             function fetchModels() {
                 const baseUrl = baseUrlInput.value.trim();
@@ -379,11 +476,14 @@
 
                 // 清除之前的错误
                 hideError();
+                hideSuccess();
                 
                 // 显示加载状态
                 loadingElement.classList.remove('hidden');
                 noResultsMessage.classList.add('hidden');
                 modelsList.innerHTML = '';
+                copyActions.classList.add('hidden');
+                modelIds = [];
 
                 // 构建请求 URL
                 let modelsUrl = `${baseUrl}/models`;
@@ -440,10 +540,15 @@
                     // 排序模型（按名称首字母顺序）
                     filteredModels.sort((a, b) => a.id.localeCompare(b.id));
 
+                    // 保存模型 ID 到数组中，用于"复制全部"功能
+                    modelIds = filteredModels.map(model => model.id);
+
                     // 显示模型
                     filteredModels.forEach(model => {
                         const li = document.createElement('li');
                         li.className = 'model-item';
+                        li.dataset.modelId = model.id;
+                        li.title = `点击复制模型 ID: ${model.id}`;
                         
                         // 根据模型类型选择图标
                         let iconName = 'smart_toy';
@@ -459,9 +564,20 @@
                                 <strong>${model.id}</strong>
                                 ${model.owned_by ? `<div class="helper-text">提供者: ${model.owned_by}</div>` : ''}
                             </div>
+                            <span class="model-copy-hint">点击复制</span>
                         `;
+                        li.addEventListener('click', function() {
+                            copyModelId(model.id);
+                            this.classList.add('pulse');
+                            setTimeout(() => {
+                                this.classList.remove('pulse');
+                            }, 300);
+                        });
                         modelsList.appendChild(li);
                     });
+
+                    // 显示复制全部按钮
+                    copyActions.classList.remove('hidden');
                 })
                 .catch(error => {
                     loadingElement.classList.add('hidden');
@@ -483,17 +599,65 @@
             function clearResults() {
                 modelsList.innerHTML = '';
                 hideError();
+                hideSuccess();
                 noResultsMessage.textContent = '请使用上方配置进行模型查询';
                 noResultsMessage.classList.remove('hidden');
+                copyActions.classList.add('hidden');
+                modelIds = [];
+            }
+
+            function copyModelId(modelId) {
+                navigator.clipboard.writeText(modelId)
+                    .then(() => {
+                        showSuccess(`成功复制模型 ID: ${modelId}`);
+                    })
+                    .catch(err => {
+                        showError(`复制失败: ${err}`);
+                    });
+            }
+
+            function copyAllModels() {
+                if (modelIds.length === 0) {
+                    showError('没有可复制的模型');
+                    return;
+                }
+
+                const allModelsText = modelIds.join(',');
+                navigator.clipboard.writeText(allModelsText)
+                    .then(() => {
+                        showSuccess(`成功复制所有 ${modelIds.length} 个模型 ID`);
+                    })
+                    .catch(err => {
+                        showError(`复制失败: ${err}`);
+                    });
             }
 
             function showError(message) {
                 errorMessage.textContent = message;
                 errorContainer.classList.remove('hidden');
+                hideSuccess();
             }
 
             function hideError() {
                 errorContainer.classList.add('hidden');
+            }
+
+            function showSuccess(message) {
+                successMessage.textContent = message;
+                successContainer.classList.remove('hidden');
+                successContainer.classList.remove('fade-out');
+                
+                // 3秒后自动隐藏成功消息
+                setTimeout(() => {
+                    successContainer.classList.add('fade-out');
+                    setTimeout(() => {
+                        hideSuccess();
+                    }, 500);
+                }, 3000);
+            }
+
+            function hideSuccess() {
+                successContainer.classList.add('hidden');
             }
         });
     </script>
