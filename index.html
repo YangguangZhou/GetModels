@@ -159,7 +159,7 @@
 <body>
     <div class="container">
         <h1>OpenAI 模型列表</h1>
-        <input type="text" id="apiUrl" placeholder="API 地址" value="https://api.openai.com">
+        <input type="text" id="apiUrl" placeholder="API 地址" value="https://api.openai.com/v1">
         <input type="password" id="apiKey" placeholder="API 密钥">
         <button onclick="fetchModels()">获取模型列表</button>
         <div id="loader" class="loader"></div>
@@ -190,7 +190,7 @@
             allModelsDiv.style.display = 'none';
 
             try {
-                const response = await fetch(`${apiUrl}/v1/models`, {
+                const response = await fetch(`${apiUrl}/models`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${apiKey}`,
