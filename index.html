@@ -1,258 +1,501 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OpenAI 模型列表</title>
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2597042766299857"
-        crossorigin="anonymous"></script>
-    <link type="favicon" rel="shortcut icon" href="https://jerryz.com.cn/favicon.png" />
+    <title>GetModels - OpenAI API 模型查询工具</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            /* Material You 动态颜色（可根据实际情况调整） */
+            --md-sys-color-primary: #006A6A;
+            --md-sys-color-on-primary: #ffffff;
+            --md-sys-color-primary-container: #6FF7F7;
+            --md-sys-color-on-primary-container: #002020;
+            --md-sys-color-secondary: #4A6363;
+            --md-sys-color-on-secondary: #ffffff;
+            --md-sys-color-secondary-container: #CCE8E8;
+            --md-sys-color-on-secondary-container: #051F1F;
+            --md-sys-color-surface: #FAFDFC;
+            --md-sys-color-on-surface: #191C1C;
+            --md-sys-color-surface-variant: #DAE5E4;
+            --md-sys-color-on-surface-variant: #3F4948;
+            --md-sys-color-error: #BA1A1A;
+            --md-sys-color-on-error: #ffffff;
+            --md-sys-color-error-container: #FFDAD6;
+            --md-sys-color-on-error-container: #410002;
+            --md-sys-color-outline: #6F7978;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f4f8;
+            font-family: 'Noto Sans SC', sans-serif;
             margin: 0;
-            padding: 20px;
-            color: #333;
+            padding: 0;
+            background-color: var(--md-sys-color-surface);
+            color: var(--md-sys-color-on-surface);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
-        .container {
+        header {
+            background-color: var(--md-sys-color-primary);
+            color: var(--md-sys-color-on-primary);
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 500;
+        }
+
+        .logo {
+            margin-right: 12px;
+            font-size: 28px;
+        }
+
+        main {
+            flex: 1;
             max-width: 800px;
-            margin: 0 auto;
-            background-color: #ffffff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        h1 {
-            color: #279cff;
-            text-align: center;
-        }
-
-        input,
-        button {
             width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
+            margin: 0 auto;
+            padding: 24px;
             box-sizing: border-box;
         }
 
-        button {
-            background-color: #279cff;
-            color: white;
+        .card {
+            background-color: #ffffff;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: var(--md-sys-color-primary);
+            margin-top: 0;
+            font-size: 1.25rem;
+            font-weight: 500;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--md-sys-color-on-surface-variant);
+            font-size: 0.875rem;
+        }
+
+        input[type="text"], 
+        input[type="password"],
+        select {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 8px;
+            border: 1px solid var(--md-sys-color-outline);
+            background-color: var(--md-sys-color-surface);
+            font-size: 1rem;
+            color: var(--md-sys-color-on-surface);
+            box-sizing: border-box;
+            transition: border 0.2s, box-shadow 0.2s;
+            font-family: 'Noto Sans SC', sans-serif;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--md-sys-color-primary);
+            box-shadow: 0 0 0 2px rgba(0, 106, 106, 0.2);
+        }
+
+        .helper-text {
+            font-size: 0.75rem;
+            color: var(--md-sys-color-on-surface-variant);
+            margin-top: 4px;
+        }
+
+        .button {
+            background-color: var(--md-sys-color-primary);
+            color: var(--md-sys-color-on-primary);
             border: none;
+            border-radius: 20px;
+            padding: 10px 24px;
+            font-size: 0.875rem;
+            font-weight: 500;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: background-color 0.2s, box-shadow 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 8px;
+            min-width: 100px;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
         }
 
-        button:hover {
-            background-color: #1f78cc;
+        .button:hover {
+            background-color: #005757;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
         }
 
-        .loader {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #279cff;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
+        .button-secondary {
+            background-color: var(--md-sys-color-secondary-container);
+            color: var(--md-sys-color-on-secondary-container);
+        }
+
+        .button-secondary:hover {
+            background-color: #BBD7D7;
+        }
+
+        .button .material-symbols-outlined {
+            font-size: 18px;
+            margin-right: 8px;
+        }
+
+        .result-container {
+            background-color: var(--md-sys-color-surface-variant);
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 24px;
+            min-height: 100px;
+        }
+
+        .model-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .model-item {
+            padding: 12px;
+            border-bottom: 1px solid var(--md-sys-color-outline);
+            display: flex;
+            align-items: center;
+        }
+
+        .model-item:last-child {
+            border-bottom: none;
+        }
+
+        .model-icon {
+            margin-right: 12px;
+            color: var(--md-sys-color-primary);
+        }
+
+        .error {
+            background-color: var(--md-sys-color-error-container);
+            color: var(--md-sys-color-on-error-container);
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+        }
+
+        .error .material-symbols-outlined {
+            margin-right: 8px;
+        }
+
+        .hidden {
             display: none;
+        }
+
+        footer {
+            text-align: center;
+            padding: 16px;
+            color: var(--md-sys-color-on-surface-variant);
+            font-size: 0.875rem;
+            margin-top: auto;
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 600px) {
+            main {
+                padding: 16px;
+            }
+            
+            .card {
+                padding: 16px;
+            }
+        }
+
+        /* 深色模式支持 */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --md-sys-color-primary: #4CDADA;
+                --md-sys-color-on-primary: #003737;
+                --md-sys-color-primary-container: #004F4F;
+                --md-sys-color-on-primary-container: #6FF7F7;
+                --md-sys-color-secondary: #B0CCCC;
+                --md-sys-color-on-secondary: #1C3535;
+                --md-sys-color-secondary-container: #334B4B;
+                --md-sys-color-on-secondary-container: #CCE8E8;
+                --md-sys-color-surface: #191C1C;
+                --md-sys-color-on-surface: #E0E3E2;
+                --md-sys-color-surface-variant: #3F4948;
+                --md-sys-color-on-surface-variant: #BFC8C8;
+                --md-sys-color-error: #FFB4AB;
+                --md-sys-color-on-error: #690005;
+                --md-sys-color-error-container: #93000A;
+                --md-sys-color-on-error-container: #FFDAD6;
+                --md-sys-color-outline: #899392;
+            }
+
+            body {
+                background-color: var(--md-sys-color-surface);
+            }
+            
+            .card {
+                background-color: #202424;
+            }
+            
+            input[type="text"], 
+            input[type="password"],
+            select {
+                background-color: rgba(255, 255, 255, 0.05);
+                border-color: var(--md-sys-color-outline);
+                color: var(--md-sys-color-on-surface);
+            }
+        }
+
+        /* 加载动画 */
+        .loader {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            margin-right: 8px;
+            border: 2px solid var(--md-sys-color-on-primary);
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s linear infinite;
         }
 
         @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
+            to {
                 transform: rotate(360deg);
             }
         }
-
-        #result {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-around;
-        }
-
-        .model-card {
-            background-color: #fff;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            padding: 15px;
-            margin: 10px;
-            width: calc(33% - 20px);
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s, box-shadow 0.2s;
-            cursor: pointer;
-        }
-
-        .model-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-        }
-
-        #all-models {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: #ecf0f1;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            display: none;
-        }
-
-        #all-models:hover {
-            background-color: #d5dbdb;
-        }
-
-        #copy-notification {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: #2ecc71;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 8px;
-            display: none;
-            animation: fadeInOut 2s ease-in-out;
-        }
-
-        @keyframes fadeInOut {
-
-            0%,
-            100% {
-                opacity: 0;
-            }
-
-            10%,
-            90% {
-                opacity: 1;
-            }
-        }
-
-        .copyright {
-            text-align: center;
-            margin: 2rem 0 1rem 0;
-            color: #999;
-            font-size: 14px;
-        }
-
-        .copyright a {
-            text-decoration: none;
-            font-weight: bold;
-            color: var(--primary-color);
-            transition: opacity 0.2s;
-        }
-
-        .copyright a:hover {
-            opacity: 0.7;
-        }
     </style>
 </head>
-
 <body>
-    <div class="container">
-        <h1>OpenAI 模型列表</h1>
-        <input type="text" id="apiUrl" placeholder="API 地址" value="https://api.openai.com/v1">
-        <input type="password" id="apiKey" placeholder="API 密钥">
-        <button onclick="fetchModels()">获取模型列表</button>
-        <div id="loader" class="loader"></div>
-        <div id="result"></div>
-        <div id="all-models"></div>
-    </div>
-    <div class="copyright">
-        Copyright &copy; 2024
-        <a href="https://jerryz.com.cn" target="_blank">Jerry Zhou</a>
-    </div>
-    <div id="copy-notification">已复制到剪贴板</div>
+    <header>
+        <span class="material-symbols-outlined logo">model_training</span>
+        <h1>GetModels - OpenAI API 模型查询工具</h1>
+    </header>
+
+    <main>
+        <div class="card">
+            <h2>API 信息配置</h2>
+            <div id="error-container" class="error hidden">
+                <span class="material-symbols-outlined">error</span>
+                <div id="error-message"></div>
+            </div>
+            <div class="form-group">
+                <label for="base-url">API 基础 URL</label>
+                <input type="text" id="base-url" placeholder="https://api.openai.com/v1" value="https://api.openai.com/v1">
+                <div class="helper-text">OpenAI API 或兼容格式 API 的基础地址</div>
+            </div>
+            <div class="form-group">
+                <label for="api-key">API 密钥</label>
+                <input type="password" id="api-key" placeholder="sk-...">
+                <div class="helper-text">用于认证请求的 API 密钥</div>
+            </div>
+            <div class="form-group">
+                <label for="model-type">模型类型</label>
+                <select id="model-type">
+                    <option value="all">所有模型</option>
+                    <option value="embedding">嵌入模型</option>
+                    <option value="chat">对话模型</option>
+                </select>
+                <div class="helper-text">选择您想要查询的模型类型</div>
+            </div>
+            <button id="fetch-models" class="button">
+                <span class="material-symbols-outlined">search</span>
+                查询模型
+            </button>
+            <button id="clear-results" class="button button-secondary">
+                <span class="material-symbols-outlined">clear_all</span>
+                清空结果
+            </button>
+        </div>
+
+        <div class="card">
+            <h2>模型列表</h2>
+            <div id="loading" class="hidden">
+                <div class="loader"></div> 正在查询模型，请稍候...
+            </div>
+            <div id="result" class="result-container">
+                <div class="helper-text" id="no-results-message">请使用上方配置进行模型查询</div>
+                <ul class="model-list" id="models-list"></ul>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        &copy; 2025 YangguangZhou/GetModels - <a href="https://github.com/YangguangZhou/GetModels" target="_blank">GitHub</a>
+    </footer>
 
     <script>
-        async function fetchModels() {
-            const apiUrl = document.getElementById('apiUrl').value.trim().replace(/\/$/, '');
-            const apiKey = document.getElementById('apiKey').value.trim();
-            const resultDiv = document.getElementById('result');
-            const loader = document.getElementById('loader');
-            const allModelsDiv = document.getElementById('all-models');
+        document.addEventListener('DOMContentLoaded', function() {
+            const fetchButton = document.getElementById('fetch-models');
+            const clearButton = document.getElementById('clear-results');
+            const baseUrlInput = document.getElementById('base-url');
+            const apiKeyInput = document.getElementById('api-key');
+            const modelTypeSelect = document.getElementById('model-type');
+            const resultContainer = document.getElementById('result');
+            const modelsList = document.getElementById('models-list');
+            const loadingElement = document.getElementById('loading');
+            const errorContainer = document.getElementById('error-container');
+            const errorMessage = document.getElementById('error-message');
+            const noResultsMessage = document.getElementById('no-results-message');
 
-            if (!apiUrl || !apiKey) {
-                resultDiv.innerHTML = '<p style="color: red;">请填写 API 地址和 API 密钥</p>';
-                return;
-            }
+            fetchButton.addEventListener('click', fetchModels);
+            clearButton.addEventListener('click', clearResults);
 
-            resultDiv.innerHTML = '';
-            loader.style.display = 'block';
-            allModelsDiv.style.display = 'none';
+            function fetchModels() {
+                const baseUrl = baseUrlInput.value.trim();
+                const apiKey = apiKeyInput.value.trim();
+                const modelType = modelTypeSelect.value;
 
-            try {
-                const response = await fetch(`${apiUrl}/models`, {
+                // 验证输入
+                if (!baseUrl) {
+                    showError('请输入有效的 API 基础 URL');
+                    return;
+                }
+
+                if (!apiKey) {
+                    showError('请输入有效的 API 密钥');
+                    return;
+                }
+
+                // 清除之前的错误
+                hideError();
+                
+                // 显示加载状态
+                loadingElement.classList.remove('hidden');
+                noResultsMessage.classList.add('hidden');
+                modelsList.innerHTML = '';
+
+                // 构建请求 URL
+                let modelsUrl = `${baseUrl}/models`;
+
+                // 发送请求
+                fetch(modelsUrl, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${apiKey}`,
                         'Content-Type': 'application/json'
                     }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP 错误: ${response.status} - ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // 处理响应数据
+                    loadingElement.classList.add('hidden');
+                    
+                    if (!data.data || data.data.length === 0) {
+                        noResultsMessage.textContent = '没有找到符合条件的模型';
+                        noResultsMessage.classList.remove('hidden');
+                        return;
+                    }
+
+                    // 根据选择的类型筛选模型
+                    let filteredModels = data.data;
+                    
+                    if (modelType === 'embedding') {
+                        filteredModels = filteredModels.filter(model => 
+                            model.id.includes('embedding') || 
+                            model.id.includes('embed') ||
+                            model.id.includes('text-embedding')
+                        );
+                    } else if (modelType === 'chat') {
+                        filteredModels = filteredModels.filter(model => 
+                            model.id.includes('gpt') || 
+                            model.id.includes('chat') || 
+                            model.id.includes('llama') ||
+                            model.id.includes('claude') ||
+                            model.id.includes('gemini')
+                        );
+                    }
+
+                    if (filteredModels.length === 0) {
+                        noResultsMessage.textContent = '没有找到符合条件的模型';
+                        noResultsMessage.classList.remove('hidden');
+                        return;
+                    }
+
+                    // 排序模型（按名称首字母顺序）
+                    filteredModels.sort((a, b) => a.id.localeCompare(b.id));
+
+                    // 显示模型
+                    filteredModels.forEach(model => {
+                        const li = document.createElement('li');
+                        li.className = 'model-item';
+                        
+                        // 根据模型类型选择图标
+                        let iconName = 'smart_toy';
+                        if (model.id.includes('embedding') || model.id.includes('embed')) {
+                            iconName = 'data_object';
+                        } else if (model.id.includes('vision') || model.id.includes('image')) {
+                            iconName = 'image';
+                        }
+                        
+                        li.innerHTML = `
+                            <span class="material-symbols-outlined model-icon">${iconName}</span>
+                            <div>
+                                <strong>${model.id}</strong>
+                                ${model.owned_by ? `<div class="helper-text">提供者: ${model.owned_by}</div>` : ''}
+                            </div>
+                        `;
+                        modelsList.appendChild(li);
+                    });
+                })
+                .catch(error => {
+                    loadingElement.classList.add('hidden');
+                    showError(`请求失败: ${error.message || '未知错误'}`);
+                    
+                    // 尝试提供更多的错误信息
+                    if (error.message.includes('401')) {
+                        showError('API 密钥无效或已过期，请检查您的 API 密钥');
+                    } else if (error.message.includes('403')) {
+                        showError('权限不足，您的 API 密钥可能没有访问权限');
+                    } else if (error.message.includes('404')) {
+                        showError('找不到 API 路径，请检查您的基础 URL 是否正确');
+                    } else if (error.message.includes('Failed to fetch')) {
+                        showError('无法连接到 API，请检查网络连接和 API 地址是否正确。跨域请求可能被浏览器阻止，请确认 API 服务器允许跨域请求。');
+                    }
                 });
-
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-
-                const data = await response.json();
-                displayModels(data.data);
-                displayAllModels(data.data);
-            } catch (error) {
-                resultDiv.innerHTML = `<p style="color: red;">错误：${error.message}</p>`;
-            } finally {
-                loader.style.display = 'none';
             }
-        }
 
+            function clearResults() {
+                modelsList.innerHTML = '';
+                hideError();
+                noResultsMessage.textContent = '请使用上方配置进行模型查询';
+                noResultsMessage.classList.remove('hidden');
+            }
 
-        function displayModels(models) {
-            const resultDiv = document.getElementById('result');
-            resultDiv.innerHTML = '';
+            function showError(message) {
+                errorMessage.textContent = message;
+                errorContainer.classList.remove('hidden');
+            }
 
-            models.forEach(model => {
-                const modelCard = document.createElement('div');
-                modelCard.className = 'model-card';
-                modelCard.innerHTML = `
-                    <h3>${model.id}</h3>
-                    <p>所有者：${model.owned_by}</p>
-                `;
-                modelCard.onclick = () => copyToClipboard(model.id);
-                resultDiv.appendChild(modelCard);
-            });
-        }
-
-        function displayAllModels(models) {
-            const allModelsDiv = document.getElementById('all-models');
-            const modelNames = models.map(model => model.id).join(',');
-            allModelsDiv.innerHTML = `<p>${modelNames}</p>`;
-            allModelsDiv.onclick = () => copyToClipboard(modelNames);
-            allModelsDiv.style.display = 'block';
-        }
-
-        function copyToClipboard(text) {
-            navigator.clipboard.writeText(text).then(() => {
-                showCopyNotification();
-            }).catch(err => {
-                console.error('复制失败：', err);
-            });
-        }
-
-        function showCopyNotification() {
-            const notification = document.getElementById('copy-notification');
-            notification.style.display = 'block';
-            setTimeout(() => {
-                notification.style.display = 'none';
-            }, 2000);
-        }
+            function hideError() {
+                errorContainer.classList.add('hidden');
+            }
+        });
     </script>
 </body>
-
 </html>
