@@ -9,7 +9,7 @@
 
 ✨ 轻松获取 OpenAI 格式 API 的可用模型列表 ✨
 
-[演示](https://models.jerryz.com.cn/) | [报告问题](https://github.com/YangguangZhou/GetModels/issues/new)
+[演示](https://md.jerryz.com.cn/models)
 
 </div>
 
@@ -32,7 +32,7 @@
 
 ## 🌈 在线体验
 
-访问 [https://models.jerryz.com.cn/](https://models.jerryz.com.cn/) 可以直接体验 GetModels。
+访问 [md.jerryz.com.cn/models](https://md.jerryz.com.cn/models) 可以直接体验 GetModels。
 
 ## 💻 本地运行
 
